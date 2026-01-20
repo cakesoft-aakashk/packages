@@ -91,7 +91,8 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
     let calendarReadOnlyErrorMessageFormat = "Calendar with ID %@ is read-only"
     let eventNotFoundErrorMessageFormat = "The event with the ID %@ could not be found"
     let eventStore = EKEventStore()
-    let requestPermissionsMethod = "requestPermissions"
+    let requestWriteOnlyPermissionsMethod = "requestWriteOnlyPermissions"
+    let requestFullAccessPermissionsMethod = "requestFullAccessPermissions"
     let hasPermissionsMethod = "hasPermissions"
     let retrieveCalendarsMethod = "retrieveCalendars"
     let retrieveEventsMethod = "retrieveEvents"
@@ -147,8 +148,10 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
-        case requestPermissionsMethod:
-            requestPermissions(result)
+        case requestWriteOnlyPermissionsMethod:
+            requestWriteOnlyPermissions(result)
+        case requestFullAccessPermissionsMethod:
+            requestFullAccessPermissions(result)
         case hasPermissionsMethod:
             hasPermissions(result)
         case retrieveCalendarsMethod:
@@ -932,20 +935,44 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
     private func hasEventPermissions() -> Bool {
         let status = EKEventStore.authorizationStatus(for: .event)
         if #available(iOS 17, *) {
-            return status == EKAuthorizationStatus.fullAccess
+            return status == EKAuthorizationStatus.fullAccess || status == EKAuthorizationStatus.writeOnly
         } else {
             return status == EKAuthorizationStatus.authorized
         }
     }
 
-    private func requestPermissions(_ result: @escaping FlutterResult) {
+    private func requestWriteOnlyPermissions(_ result: @escaping FlutterResult) {
         if hasEventPermissions()  {
             result(true)
         }
-        eventStore.requestAccess(to: .event, completion: {
-            (accessGranted: Bool, _: Error?) in
-            result(accessGranted)
-        })
+        if #available(iOS 17, *) {
+            eventStore.requestWriteOnlyAccessToEvents {
+                (accessGranted: Bool, _: Error?) in
+               result(accessGranted)
+            }
+        } else {
+            eventStore.requestAccess(to: .event, completion: {
+                (accessGranted: Bool, _: Error?) in
+              result(accessGranted)
+            })
+        }
+    }
+
+    private func requestFullAccessPermissions(_ result: @escaping FlutterResult) {
+        if hasEventPermissions()  {
+            result(true)
+        }
+        if #available(iOS 17, *) {
+            eventStore.requestFullAccessToEvents {
+                (accessGranted: Bool, _: Error?) in
+               result(accessGranted)
+            }
+        } else {
+            eventStore.requestAccess(to: .event, completion: {
+                (accessGranted: Bool, _: Error?) in
+              result(accessGranted)
+            })
+        }
     }
 }
 

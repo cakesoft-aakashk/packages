@@ -134,7 +134,7 @@ class _CalendarsPageState extends State<CalendarsPage> {
       if (permissionsGranted.isSuccess &&
           (permissionsGranted.data == null ||
               permissionsGranted.data == false)) {
-        permissionsGranted = await _deviceCalendarPlugin.requestPermissions();
+        permissionsGranted = await _deviceCalendarPlugin.requestWriteOnlyPermissions();
         if (!permissionsGranted.isSuccess ||
             permissionsGranted.data == null ||
             permissionsGranted.data == false) {

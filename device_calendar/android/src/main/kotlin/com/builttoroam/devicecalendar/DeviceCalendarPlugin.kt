@@ -28,7 +28,7 @@ class DeviceCalendarPlugin() : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var activity: Activity? = null
 
     // Methods
-    private val REQUEST_PERMISSIONS_METHOD = "requestPermissions"
+    private val REQUEST_PERMISSIONS_METHOD = "requestFullAccessPermissions"
     private val HAS_PERMISSIONS_METHOD = "hasPermissions"
     private val RETRIEVE_CALENDARS_METHOD = "retrieveCalendars"
     private val RETRIEVE_EVENTS_METHOD = "retrieveEvents"

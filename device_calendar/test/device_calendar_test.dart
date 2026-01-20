@@ -33,12 +33,23 @@ void main() {
     expect(result.data, true);
   });
 
-  test('RequestPermissions_Returns_Successfully', () async {
+  test('RequestWriteOnlyPermissions_Returns_Successfully', () async {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       return true;
     });
 
-    final result = await deviceCalendarPlugin.requestPermissions();
+    final result = await deviceCalendarPlugin.requestWriteOnlyPermissions();
+    expect(result.isSuccess, true);
+    expect(result.errors, isEmpty);
+    expect(result.data, true);
+  });
+
+  test('RequestFullAccessPermissions_Returns_Successfully', () async {
+    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      return true;
+    });
+
+    final result = await deviceCalendarPlugin.requestFullAccessPermissions();
     expect(result.isSuccess, true);
     expect(result.errors, isEmpty);
     expect(result.data, true);

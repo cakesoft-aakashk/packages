@@ -33,13 +33,23 @@ class DeviceCalendarPlugin {
   @visibleForTesting
   DeviceCalendarPlugin.private();
 
-  /// Requests permissions to modify the calendars on the device
+  /// Requests permissions to add event only to then calendars on the device
+  ///
+  /// Returns a [Result] indicating if calendar WRITE permissions
+  /// have (true) or have not (false) been granted
+  Future<Result<bool>> requestWriteOnlyPermissions() async {
+    return _invokeChannelMethod(
+      ChannelConstants.methodNameRequestWriteOnlyPermissions,
+    );
+  }
+
+  /// Requests permissions to read & write to the calendars on the device
   ///
   /// Returns a [Result] indicating if calendar READ and WRITE permissions
   /// have (true) or have not (false) been granted
-  Future<Result<bool>> requestPermissions() async {
+  Future<Result<bool>> requestFullAccessPermissions() async {
     return _invokeChannelMethod(
-      ChannelConstants.methodNameRequestPermissions,
+      ChannelConstants.methodNameRequestFullAccessPermissions,
     );
   }
 
