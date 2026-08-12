@@ -27,4 +27,4 @@ flutter:
         package: com.builttoroam.devicecalendar
         pluginClass: DeviceCalendarPlugin
       ios:
-        pluginClass: DeviceCalendarPlugin
+        pluginClass: SwiftDeviceCalendarPlugin
