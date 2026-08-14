@@ -18,38 +18,38 @@ class CastDiscoveryService {
     final results = <CastDevice>[];
 
     final discovery = BonsoirDiscovery(type: _domain);
-    await discovery.ready;
+    await discovery.initialize();
 
     discovery.eventStream!.listen((event) {
-      if (event.type == BonsoirDiscoveryEventType.discoveryServiceFound) {
-        event.service?.resolve(discovery.serviceResolver);
-      } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceResolved) {
-        if (event.service == null || event.service?.attributes == null) {
+      if (event is BonsoirDiscoveryServiceFoundEvent) {
+        event.service.resolve(discovery.serviceResolver);
+      } else if (event is BonsoirDiscoveryServiceResolvedEvent) {
+        if (event.service.attributes.isEmpty) {
           return;
         }
 
-        final port = event.service?.port;
-        final host = event.service?.toJson()['service.ip'] ?? event.service?.toJson()['service.host'];
+        final port = event.service.port;
+        final host = event.service.host;
 
         String name = [
-          event.service?.attributes?['md'],
-          event.service?.attributes?['fn'],
+          event.service.attributes['md'],
+          event.service.attributes['fn'],
         ].whereType<String>().join(' - ');
         if (name.isEmpty) {
-          name = event.service!.name;
+          name = event.service.name;
         }
 
-        if (port == null || host == null) {
+        if (host == null) {
           return;
         }
 
         results.add(
           CastDevice(
-            serviceName: event.service!.name,
+            serviceName: event.service.name,
             name: name,
             port: port,
             host: host,
-            extras: event.service!.attributes ?? {},
+            extras: event.service.attributes,
           ),
         );
       }
